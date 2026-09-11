@@ -1,9 +1,10 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using TaxReturns.Application.Abstractions.Plugins;
-using TaxReturns.Infrastructure;
-using TaxReturns.Plugins.VAT.Infrastructure.Persistence;
+using TaxReturns.Plugins.Abstractions.Infrastructure;
+using TaxReturns.Plugins.Abstractions.Application.Plugins;
+using System.Reflection;
+using TaxReturns.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +16,7 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<VatDbContext>(options => {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TaxReturnsDB"));
-});
+builder.Services.AddPluginDbContexts(builder.Configuration, typeof(Program).Assembly);
 
 builder.Host.ConfigureContainer<ContainerBuilder>(container => {
     var assembly = typeof(Program).Assembly;
@@ -49,6 +48,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    //await app.InitialisePluginDatabasesAsync();
+}
 
 app.Run();
 

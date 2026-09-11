@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using TaxReturns.Application.Abstractions.Plugins;
-using TaxReturns.Domain.Models;
-using TaxReturns.Plugins.VAT.Contracts;
+using TaxReturns.Plugins.Abstractions.Application.Plugins;
+using TaxReturns.Plugins.Abstractions.Application.Models.Enums;
+using TaxReturns.Plugins.Abstractions.Application.Models.Inputs;
 
 namespace TaxReturns.Controllers
 {
@@ -16,17 +16,24 @@ namespace TaxReturns.Controllers
             this.resolver = resolver;
         }
         [HttpPost]
-        public async Task<ActionResult> Calculate(string taxType, VatCalculatePenaltyRequest request,CancellationToken cancellationToken = default)
+        public async Task<ActionResult> Calculate(TaxType taxType, CalculationRequest request,CancellationToken cancellationToken = default)
         {
-            var plugin = resolver.Resolve<IPenaltyPlugin<VatPenaltyResult, VatCalculatePenaltyRequest>>(taxType);
-            var result = await plugin.LateFiling(request, cancellationToken);
-            return Ok(result);
+            var plugin = resolver.Resolve<ITaxPlugin>(taxType);
+            var result = await plugin.CalculateTax(request);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
         }
         [HttpGet]
-        public async Task<ActionResult> List(string taxType, PenaltyQuery query, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> List(TaxType taxType,[FromQuery] string tpin, CancellationToken cancellationToken = default)
         {
-            var plugin = resolver.Resolve<IPenaltyPlugin<VatPenaltyResult, VatCalculatePenaltyRequest>>(taxType);
-            var result = await plugin.List(query, cancellationToken);
+            var plugin = resolver.Resolve<ITaxPlugin>(taxType);
+            var result = await plugin.ListReturns(tpin);
             return Ok(result);
         }
     }

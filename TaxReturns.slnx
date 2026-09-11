@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="TaxReturns.Plugins.Abstractions/TaxReturns.Plugins.Abstractions.csproj" Id="01c7bf58-06f0-41cc-b453-a1df2e18ae7e" />
+  <Project Path="TaxReturns.Plugins.VAT/TaxReturns.Plugins.VAT.csproj" Id="2ad40af2-296f-4b3a-846e-20af46275cb0" />
   <Project Path="TaxReturns/TaxReturns.csproj" />
 </Solution>

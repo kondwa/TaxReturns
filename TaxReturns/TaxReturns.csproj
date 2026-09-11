@@ -17,4 +17,13 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\Abstractions\" />
+    <Folder Include="Domain\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TaxReturns.Plugins.Abstractions\TaxReturns.Plugins.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
